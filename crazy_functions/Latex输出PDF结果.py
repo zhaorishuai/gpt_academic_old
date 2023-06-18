@@ -2,7 +2,8 @@ from toolbox import update_ui, trimmed_format_exc, get_conf, objdump, objload, p
 from toolbox import CatchException, report_execption, update_ui_lastest_msg, zip_result, gen_time_str
 import glob, os, requests, time
 pj = os.path.join
-ARXIV_CACHE_DIR = os.path.expanduser(f"~/arxiv_cache/")
+# ARXIV_CACHE_DIR = os.path.expanduser(f"~/arxiv_cache/")
+ARXIV_CACHE_DIR = os.getenv("Arxiv_Cache")
 
 # =================================== 工具函数 ===============================================
 专业词汇声明  = 'If the term "agent" is used in this section, it should be translated to "智能体". '
