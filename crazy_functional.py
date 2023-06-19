@@ -221,7 +221,6 @@ def get_crazy_functions():
                 # "AdvancedArgs": True,
                 # "ArgsReminder": "",
                 "Function": HotReload(Latex翻译中文并重新编译PDF)
-            }
         },
 
 
