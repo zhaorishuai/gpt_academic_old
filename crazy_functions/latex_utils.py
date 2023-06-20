@@ -685,7 +685,9 @@ def 编译Latex(chatbot, history, main_file_original, main_file_modified, work_f
             result_pdf = pj(work_folder_modified, f'{main_file_modified}.pdf')
             if os.path.exists(pj(work_folder, '..', 'translation')):
                 shutil.copyfile(result_pdf, pj(work_folder, '..', 'translation', 'translate_zh.pdf'))
-            promote_file_to_downloadzone(result_pdf, chatbot)
+            promote_file_to_downloadzone(result_pdf, chatbot=chatbot)
+            # 我重新指定了参数传入。
+            # promote_file_to_downloadzone(file=result_pdf, rename_file=None, chatbot=chatbot)
             return True # 成功啦
         else:
             if n_fix>=max_try: break
