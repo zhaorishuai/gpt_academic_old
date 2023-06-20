@@ -40,57 +40,57 @@ def get_crazy_functions():
             "AsButton":False,
             "Function": HotReload(删除所有本地对话历史记录)
         },
-        "[测试功能] 解析Jupyter Notebook文件": {
+        # "[测试功能] 解析Jupyter Notebook文件": {
+        #     "Color": "stop",
+        #     "AsButton":False,
+        #     "Function": HotReload(解析ipynb文件),
+        #     "AdvancedArgs": True, # 调用时，唤起高级参数输入区（默认False）
+        #     "ArgsReminder": "若输入0，则不解析notebook中的Markdown块", # 高级参数输入区的显示提示
+        # },
+        "批量总结Word文档": {
             "Color": "stop",
-            "AsButton":False,
-            "Function": HotReload(解析ipynb文件),
-            "AdvancedArgs": True, # 调用时，唤起高级参数输入区（默认False）
-            "ArgsReminder": "若输入0，则不解析notebook中的Markdown块", # 高级参数输入区的显示提示
+            "Function": HotReload(总结word文档)
         },
-#         "批量总结Word文档": {
-#             "Color": "stop",
-#             "Function": HotReload(总结word文档)
-#         },
-        "解析整个C++项目头文件": {
-            "Color": "stop",    # 按钮颜色
-            "AsButton": False,  # 加入下拉菜单中
-            "Function": HotReload(解析一个C项目的头文件)
-        },
-        "解析整个C++项目（.cpp/.hpp/.c/.h）": {
-            "Color": "stop",    # 按钮颜色
-            "AsButton": False,  # 加入下拉菜单中
-            "Function": HotReload(解析一个C项目)
-        },
-#         "解析整个Go项目": {
-#             "Color": "stop",    # 按钮颜色
-#             "AsButton": False,  # 加入下拉菜单中
-#             "Function": HotReload(解析一个Golang项目)
-#         },
-#         "解析整个Rust项目": {
-#             "Color": "stop",    # 按钮颜色
-#             "AsButton": False,  # 加入下拉菜单中
-#             "Function": HotReload(解析一个Rust项目)
-#         },
-#         "解析整个Java项目": {
-#             "Color": "stop",  # 按钮颜色
-#             "AsButton": False,  # 加入下拉菜单中
-#             "Function": HotReload(解析一个Java项目)
-#         },
-#         "解析整个前端项目（js,ts,css等）": {
-#             "Color": "stop",  # 按钮颜色
-#             "AsButton": False,  # 加入下拉菜单中
-#             "Function": HotReload(解析一个前端项目)
-#         },
-#         "解析整个Lua项目": {
-#             "Color": "stop",    # 按钮颜色
-#             "AsButton": False,  # 加入下拉菜单中
-#             "Function": HotReload(解析一个Lua项目)
-#         },
-#         "解析整个CSharp项目": {
-#             "Color": "stop",    # 按钮颜色
-#             "AsButton": False,  # 加入下拉菜单中
-#             "Function": HotReload(解析一个CSharp项目)
-#         },
+        # "解析整个C++项目头文件": {
+        #     "Color": "stop",    # 按钮颜色
+        #     "AsButton": False,  # 加入下拉菜单中
+        #     "Function": HotReload(解析一个C项目的头文件)
+        # },
+        # "解析整个C++项目（.cpp/.hpp/.c/.h）": {
+        #     "Color": "stop",    # 按钮颜色
+        #     "AsButton": False,  # 加入下拉菜单中
+        #     "Function": HotReload(解析一个C项目)
+        # },
+        # "解析整个Go项目": {
+        #     "Color": "stop",    # 按钮颜色
+        #     "AsButton": False,  # 加入下拉菜单中
+        #     "Function": HotReload(解析一个Golang项目)
+        # },
+        # "解析整个Rust项目": {
+        #     "Color": "stop",    # 按钮颜色
+        #     "AsButton": False,  # 加入下拉菜单中
+        #     "Function": HotReload(解析一个Rust项目)
+        # },
+        # "解析整个Java项目": {
+        #     "Color": "stop",  # 按钮颜色
+        #     "AsButton": False,  # 加入下拉菜单中
+        #     "Function": HotReload(解析一个Java项目)
+        # },
+        # "解析整个前端项目（js,ts,css等）": {
+        #     "Color": "stop",  # 按钮颜色
+        #     "AsButton": False,  # 加入下拉菜单中
+        #     "Function": HotReload(解析一个前端项目)
+        # },
+        # "解析整个Lua项目": {
+        #     "Color": "stop",    # 按钮颜色
+        #     "AsButton": False,  # 加入下拉菜单中
+        #     "Function": HotReload(解析一个Lua项目)
+        # },
+        # "解析整个CSharp项目": {
+        #     "Color": "stop",    # 按钮颜色
+        #     "AsButton": False,  # 加入下拉菜单中
+        #     "Function": HotReload(解析一个CSharp项目)
+        # },
         "读Tex论文写摘要": {
             "Color": "stop",    # 按钮颜色
             "Function": HotReload(读文章写摘要)
@@ -108,19 +108,19 @@ def get_crazy_functions():
         "保存当前的对话": {
             "Function": HotReload(对话历史存档)
         },
-#         "[多线程Demo] 解析此项目本身（源码自译解）": {
-#             "AsButton": False,  # 加入下拉菜单中
-#             "Function": HotReload(解析项目本身)
-#         },
-#         "[老旧的Demo] 把本项目源代码切换成全英文": {
-#             # HotReload 的意思是热更新，修改函数插件代码后，不需要重启程序，代码直接生效
-#             "AsButton": False,  # 加入下拉菜单中
-#             "Function": HotReload(全项目切换英文)
-# #         },
-#         "[插件demo] 历史上的今天": {
-#             # HotReload 的意思是热更新，修改函数插件代码后，不需要重启程序，代码直接生效
-#             "Function": HotReload(高阶功能模板函数)
-#         },
+        # "[多线程Demo] 解析此项目本身（源码自译解）": {
+        #     "AsButton": False,  # 加入下拉菜单中
+        #     "Function": HotReload(解析项目本身)
+        # },
+        # "[老旧的Demo] 把本项目源代码切换成全英文": {
+        #     # HotReload 的意思是热更新，修改函数插件代码后，不需要重启程序，代码直接生效
+        #     "AsButton": False,  # 加入下拉菜单中
+        #     "Function": HotReload(全项目切换英文)
+        # },
+        # "[插件demo] 历史上的今天": {
+        #     # HotReload 的意思是热更新，修改函数插件代码后，不需要重启程序，代码直接生效
+        #     "Function": HotReload(高阶功能模板函数)
+        # },
 
     }
     ###################### 第二组插件 ###########################
@@ -135,17 +135,35 @@ def get_crazy_functions():
     from crazy_functions.Latex全文翻译 import Latex中译英
     from crazy_functions.Latex全文翻译 import Latex英译中
     from crazy_functions.批量Markdown翻译 import Markdown中译英
+    # from crazy_functions.Latex输出PDF结果 import Latex英文纠错加PDF对比
+    from crazy_functions.Latex输出PDF结果 import Latex翻译中文并重新编译PDF
 
     function_plugins.update({
-        "批量翻译PDF文档（多线程）": {
+        "翻译任意PDF文档2MD": {
             "Color": "stop",
             "AsButton": True,  # 加入下拉菜单中
             "Function": HotReload(批量翻译PDF文档)
         },
-#         "询问多个GPT模型": {
-#             "Color": "stop",    # 按钮颜色
-#             "Function": HotReload(同时问询)
-#         },
+        # "[功能尚不稳定] Latex英文纠错+LatexDiff高亮修正位置": {
+        #             "Color": "stop",
+        #             "AsButton": True,
+        #             # "AdvancedArgs": True,
+        #             # "ArgsReminder": "",
+        #             "Function": HotReload(Latex英文纠错加PDF对比)
+        # },
+        "[功能尚不稳定] Latex翻译/Arixv翻译+重构PDF": {
+                    "Color": "stop",
+                    "AsButton": True,
+                    # "AdvancedArgs": True,
+                    # "ArgsReminder": "",
+                    "Function": HotReload(Latex翻译中文并重新编译PDF)
+        },
+
+        
+        # "询问多个GPT模型": {
+        #     "Color": "stop",    # 按钮颜色
+        #     "Function": HotReload(同时问询)
+        # },
         "[测试功能] 批量总结PDF文档": {
             "Color": "stop",
             "AsButton": False,  # 加入下拉菜单中
@@ -204,24 +222,6 @@ def get_crazy_functions():
             "AsButton": False,  # 加入下拉菜单中
             "Function": HotReload(Markdown中译英)
         },
-        from crazy_functions.Latex输出PDF结果 import Latex英文纠错加PDF对比
-        from crazy_functions.Latex输出PDF结果 import Latex翻译中文并重新编译PDF
-
-        "[功能尚不稳定] Latex英文纠错+LatexDiff高亮修正位置": {
-                "Color": "stop",
-                "AsButton": False,
-                # "AdvancedArgs": True,
-                # "ArgsReminder": "",
-                "Function": HotReload(Latex英文纠错加PDF对比)
-        },
-                        
-        "[功能尚不稳定] Latex翻译/Arixv翻译+重构PDF": {
-                "Color": "stop",
-                "AsButton": False,
-                # "AdvancedArgs": True,
-                # "ArgsReminder": "",
-                "Function": HotReload(Latex翻译中文并重新编译PDF)
-        },
 
 
     })
@@ -253,33 +253,33 @@ def get_crazy_functions():
     except:
         print('Load function plugin failed')
 
-    try:
-        from crazy_functions.解析项目源代码 import 解析任意code项目
-        function_plugins.update({
-            "解析项目源代码（手动指定和筛选源代码文件类型）": {
-                "Color": "stop",
-                "AsButton": False,
-                "AdvancedArgs": True, # 调用时，唤起高级参数输入区（默认False）
-                "ArgsReminder": "输入时用逗号隔开, *代表通配符, 加了^代表不匹配; 不输入代表全部匹配。例如: \"*.c, ^*.cpp, config.toml, ^*.toml\"", # 高级参数输入区的显示提示
-                "Function": HotReload(解析任意code项目)
-            },
-        })
-    except:
-        print('Load function plugin failed')
+    # try:
+    #     from crazy_functions.解析项目源代码 import 解析任意code项目
+    #     function_plugins.update({
+    #         "解析项目源代码（手动指定和筛选源代码文件类型）": {
+    #             "Color": "stop",
+    #             "AsButton": False,
+    #             "AdvancedArgs": True, # 调用时，唤起高级参数输入区（默认False）
+    #             "ArgsReminder": "输入时用逗号隔开, *代表通配符, 加了^代表不匹配; 不输入代表全部匹配。例如: \"*.c, ^*.cpp, config.toml, ^*.toml\"", # 高级参数输入区的显示提示
+    #             "Function": HotReload(解析任意code项目)
+    #         },
+    #     })
+    # except:
+    #     print('Load function plugin failed')
 
-    try:
-        from crazy_functions.询问多个大语言模型 import 同时问询_指定模型
-        function_plugins.update({
-            "询问多个GPT模型（手动指定询问哪些模型）": {
-                "Color": "stop",
-                "AsButton": False,
-                "AdvancedArgs": True, # 调用时，唤起高级参数输入区（默认False）
-                "ArgsReminder": "支持任意数量的llm接口，用&符号分隔。例如chatglm&gpt-3.5-turbo&api2d-gpt-4", # 高级参数输入区的显示提示
-                "Function": HotReload(同时问询_指定模型)
-            },
-        })
-    except:
-        print('Load function plugin failed')
+    # try:
+    #     from crazy_functions.询问多个大语言模型 import 同时问询_指定模型
+    #     function_plugins.update({
+    #         "询问多个GPT模型（手动指定询问哪些模型）": {
+    #             "Color": "stop",
+    #             "AsButton": False,
+    #             "AdvancedArgs": True, # 调用时，唤起高级参数输入区（默认False）
+    #             "ArgsReminder": "支持任意数量的llm接口，用&符号分隔。例如chatglm&gpt-3.5-turbo&api2d-gpt-4", # 高级参数输入区的显示提示
+    #             "Function": HotReload(同时问询_指定模型)
+    #         },
+    #     })
+    # except:
+    #     print('Load function plugin failed')
 
     try:
         from crazy_functions.图片生成 import 图片生成
@@ -362,8 +362,6 @@ def get_crazy_functions():
         })
     except:
         print('Load function plugin failed')
-
-    
 
     try:
         from crazy_functions.虚空终端 import 终端
