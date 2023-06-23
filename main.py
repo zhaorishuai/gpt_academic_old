@@ -71,7 +71,13 @@ def main():
                         stopBtn = gr.Button("停止", variant="secondary"); stopBtn.style(size="sm")
                         clearBtn = gr.Button("清除", variant="secondary", visible=False); clearBtn.style(size="sm")
                     with gr.Row():
-                        status = gr.Markdown(f"Tip: 按Enter提交, 按Shift+Enter换行。当前模型: {LLM_MODEL} \n {proxy_info}")
+                        status = gr.Markdown(f"""Tips: 1. 按Enter提交, 按Shift+Enter换行；2. 当前模型: {LLM_MODEL} \n {proxy_info}.
+                                             3. 请注意隐私保护和遵守法律法规；
+                                             4. 请勿使用本服务进行违法犯罪活动；
+                                             5. 我和qingxu都希望能够为大家提供一个好的**学术工具**，希望大家不要攻击和滥用本服务；
+                                             6. 本服务还存在各种bug，如果发现bug，欢迎加群反馈或者发issue告诉我们；
+                                             7. 希望大家能结合ChatPaper的速读，找到需要精读的，再用本工具的全文翻译，实现快速知识摄取。
+                                             """)
                 with gr.Accordion("基础功能区", open=True) as area_basic_fn:
                     with gr.Row():
                         for k in functional:

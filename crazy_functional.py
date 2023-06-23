@@ -26,6 +26,7 @@ def get_crazy_functions():
     from crazy_functions.对话历史存档 import 删除所有本地对话历史记录
     
     from crazy_functions.批量Markdown翻译 import Markdown英译中
+        
     function_plugins = {
         "解析整个Python项目": {
             "Color": "stop",    # 按钮颜色
@@ -137,7 +138,7 @@ def get_crazy_functions():
     from crazy_functions.批量Markdown翻译 import Markdown中译英
 
     function_plugins.update({
-        "批量翻译PDF文档（多线程）": {
+        "本地PDF全文翻译": {
             "Color": "stop",
             "AsButton": True,  # 加入下拉菜单中
             "Function": HotReload(批量翻译PDF文档)
@@ -222,7 +223,18 @@ def get_crazy_functions():
         })
     except:
         print('Load function plugin failed')
-
+    from crazy_functions.Latex输出PDF结果 import Latex翻译中文并重新编译PDF
+    function_plugins.update({
+        "ArXiv Latex一键翻译（输入arXiv ID）": {
+            "Color": "stop",
+            "AsButton": True,
+            "AdvancedArgs": True,
+            "ArgsReminder": 
+                "如果有必要, 请在此处给出自定义翻译命令, 解决部分词汇翻译不准确的问题。 "+ 
+                "例如当单词'agent'翻译不准确时, 请尝试把以下指令复制到高级参数区: " + 'If the term "agent" is used in this section, it should be translated to "智能体". ',
+            "Function": HotReload(Latex翻译中文并重新编译PDF)
+        }
+    })
     # try:
     #     from crazy_functions.联网的ChatGPT import 连接网络回答问题
     #     function_plugins.update({
@@ -356,18 +368,7 @@ def get_crazy_functions():
                 "Function": HotReload(Latex英文纠错加PDF对比)
             }
         })
-        from crazy_functions.Latex输出PDF结果 import Latex翻译中文并重新编译PDF
-        function_plugins.update({
-            "ArXiv PDF原生翻译（输入arxivID）": {
-                "Color": "stop",
-                "AsButton": True,
-                "AdvancedArgs": True,
-                "ArgsReminder": 
-                    "如果有必要, 请在此处给出自定义翻译命令, 解决部分词汇翻译不准确的问题。 "+ 
-                    "例如当单词'agent'翻译不准确时, 请尝试把以下指令复制到高级参数区: " + 'If the term "agent" is used in this section, it should be translated to "智能体". ',
-                "Function": HotReload(Latex翻译中文并重新编译PDF)
-            }
-        })
+        
         # function_plugins.update({
         #     "本地论文翻译（上传Latex压缩包） [需Latex]": {
         #         "Color": "stop",
