@@ -52,7 +52,12 @@ def main():
         CHATBOT_HEIGHT /= 2
 
     cancel_handles = []
+    # Read your Baidu statistics code from the file
+    baidu_stats_code = Path('./sites/baidu_stats.html').read_text()
     with gr.Blocks(title="ChatGPT 学术优化", theme=set_theme, analytics_enabled=False, css=advanced_css) as demo:
+        # Insert your Baidu statistics code here
+        gr.HTML(baidu_stats_code)
+        # Insert Title
         gr.HTML(title_html)
         cookies = gr.State({'api_key': API_KEY, 'llm_model': LLM_MODEL})
         with gr_L1():
