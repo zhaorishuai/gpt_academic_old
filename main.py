@@ -1,4 +1,5 @@
 import os; os.environ['no_proxy'] = '*' # 避免代理网络产生意外污染
+from pathlib import Path
 
 def main():
     import gradio as gr
@@ -56,7 +57,16 @@ def main():
     baidu_stats_code = Path('./sites/baidu_stats.html').read_text()
     with gr.Blocks(title="ChatGPT 学术优化", theme=set_theme, analytics_enabled=False, css=advanced_css) as demo:
         # Insert your Baidu statistics code here
-        gr.HTML(baidu_stats_code)
+        gradio_original_template_fn = gr.routes.templates.TemplateResponse
+
+        def gradio_new_template_fn(*args, **kwargs):
+            res = gradio_original_template_fn(*args, **kwargs)
+            res.body = res.body.replace(b'</html>', f'{baidu_stats_code}</html>'.encode("utf8"))
+            res.init_headers()
+            return res
+
+        gr.routes.templates.TemplateResponse = gradio_new_template_fn  # override gradio template
+
         # Insert Title
         gr.HTML(title_html)
         cookies = gr.State({'api_key': API_KEY, 'llm_model': LLM_MODEL})
