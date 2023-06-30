@@ -1,4 +1,5 @@
 import os; os.environ['no_proxy'] = '*' # 避免代理网络产生意外污染
+from pathlib import Path
 
 def main():
     import gradio as gr
@@ -15,7 +16,7 @@ def main():
 
     from check_proxy import get_current_version
     initial_prompt = "Serve me as a writing and programming assistant."
-    title_html = f"<h1 align=\"center\">ChatGPT 学术优化 {get_current_version()}</h1>"
+    title_html = f"<h1 align=\"center\">ChatGPT 学术优化 网页测试版 {get_current_version()}</h1>"
     description =  """代码开源和更新[地址🚀](https://github.com/binary-husky/chatgpt_academic)，感谢热情的[开发者们❤️](https://github.com/binary-husky/chatgpt_academic/graphs/contributors)"""
 
     # 问询记录, python 版本建议3.9+（越新越好）
@@ -52,7 +53,21 @@ def main():
         CHATBOT_HEIGHT /= 2
 
     cancel_handles = []
+    # Read your Baidu statistics code from the file
+    baidu_stats_code = Path('./sites/baidu_stats.html').read_text()
     with gr.Blocks(title="ChatGPT 学术优化", theme=set_theme, analytics_enabled=False, css=advanced_css) as demo:
+        # Insert your Baidu statistics code here
+        gradio_original_template_fn = gr.routes.templates.TemplateResponse
+
+        def gradio_new_template_fn(*args, **kwargs):
+            res = gradio_original_template_fn(*args, **kwargs)
+            res.body = res.body.replace(b'</html>', f'{baidu_stats_code}</html>'.encode("utf8"))
+            res.init_headers()
+            return res
+
+        gr.routes.templates.TemplateResponse = gradio_new_template_fn  # override gradio template
+
+        # Insert Title
         gr.HTML(title_html)
         cookies = gr.State({'api_key': API_KEY, 'llm_model': LLM_MODEL})
         with gr_L1():
@@ -71,7 +86,13 @@ def main():
                         stopBtn = gr.Button("停止", variant="secondary"); stopBtn.style(size="sm")
                         clearBtn = gr.Button("清除", variant="secondary", visible=False); clearBtn.style(size="sm")
                     with gr.Row():
-                        status = gr.Markdown(f"Tip: 按Enter提交, 按Shift+Enter换行。当前模型: {LLM_MODEL} \n {proxy_info}")
+                        status = gr.Markdown(f"""Tips: 1. 按Enter提交, 按Shift+Enter换行；2. 当前模型: {LLM_MODEL} \n {proxy_info}.
+                                             3. 请注意隐私保护和遵守法律法规；
+                                             4. 请勿使用本服务进行违法犯罪活动；
+                                             5. 我和qingxu都希望能够为大家提供一个好的**学术工具**，希望大家不要攻击和滥用本服务；
+                                             6. 本服务还存在各种bug，如果发现bug，欢迎加群反馈或者发issue告诉我们；
+                                             7. 希望大家能结合ChatPaper的速读，找到需要精读的，再用本工具的全文翻译，实现快速知识摄取。
+                                             """)
                 with gr.Accordion("基础功能区", open=True) as area_basic_fn:
                     with gr.Row():
                         for k in functional:
