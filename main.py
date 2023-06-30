@@ -188,6 +188,7 @@ def main():
                 ret.update({plugin_advanced_arg: gr.update(visible=False, label=f"插件[{k}]不需要高级参数。")})
             return ret
         dropdown.select(on_dropdown_changed, [dropdown], [switchy_bt, plugin_advanced_arg] )
+        
         def on_md_dropdown_changed(k):
             return {chatbot: gr.update(label="当前模型："+k)}
         md_dropdown.select(on_md_dropdown_changed, [md_dropdown], [chatbot] )
@@ -201,6 +202,7 @@ def main():
         # 终止按钮的回调函数注册
         stopBtn.click(fn=None, inputs=None, outputs=None, cancels=cancel_handles)
         stopBtn2.click(fn=None, inputs=None, outputs=None, cancels=cancel_handles)
+        demo.load(on_dropdown_changed, inputs=gr.State("ArXiv Latex一键翻译（输入区给定arXiv ID）"), outputs=[switchy_bt, plugin_advanced_arg])
 
     # gradio的inbrowser触发不太稳定，回滚代码到原始的浏览器打开函数
     def auto_opentab_delay():

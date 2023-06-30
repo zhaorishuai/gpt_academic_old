@@ -48,10 +48,10 @@ def get_crazy_functions():
             "AdvancedArgs": True, # 调用时，唤起高级参数输入区（默认False）
             "ArgsReminder": "若输入0，则不解析notebook中的Markdown块", # 高级参数输入区的显示提示
         },
-        "批量总结Word文档": {
-            "Color": "stop",
-            "Function": HotReload(总结word文档)
-        },
+        # "批量总结Word文档": {
+        #     "Color": "stop",
+        #     "Function": HotReload(总结word文档)
+        # },
         "解析整个C++项目头文件": {
             "Color": "stop",    # 按钮颜色
             "AsButton": False,  # 加入下拉菜单中
@@ -225,7 +225,7 @@ def get_crazy_functions():
         print('Load function plugin failed')
     from crazy_functions.Latex输出PDF结果 import Latex翻译中文并重新编译PDF
     function_plugins.update({
-        "ArXiv Latex一键翻译（输入arXiv ID）": {
+        "ArXiv Latex一键翻译（输入区给定arXiv ID）": {
             "Color": "stop",
             "AsButton": True,
             "AdvancedArgs": True,
