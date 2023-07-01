@@ -28,6 +28,7 @@ proxies, API_KEY, TIMEOUT_SECONDS, MAX_RETRY = \
 timeout_bot_msg = '[Local Message] Request timeout. Network error. Please check proxy settings in config.py.' + \
                   '网络错误，检查代理服务器是否可用，以及代理设置的格式是否正确，格式须是[协议]://[地址]:[端口]，缺一不可。'
 
+
 def get_full_error(chunk, stream_response):
     """
         获取完整的从Openai返回的报错
@@ -40,7 +41,9 @@ def get_full_error(chunk, stream_response):
     return chunk
 
 
-def predict_no_ui_long_connection(inputs, llm_kwargs, history=[], sys_prompt="", observe_window=None, console_slience=False):
+def predict_no_ui_long_connection(
+        inputs, llm_kwargs, history=None, sys_prompt="", observe_window=None, console_slience=False
+):
     """
     发送至chatGPT，等待回复，一次性完成，不显示中间过程。但内部用stream的方法避免中途网线被掐。
     inputs：
@@ -54,45 +57,59 @@ def predict_no_ui_long_connection(inputs, llm_kwargs, history=[], sys_prompt="",
     observe_window = None：
         用于负责跨越线程传递已经输出的部分，大部分时候仅仅为了fancy的视觉效果，留空即可。observe_window[0]：观测窗。observe_window[1]：看门狗
     """
-    watch_dog_patience = 5 # 看门狗的耐心, 设置5秒即可
+    if history is None:
+        history = []
+    watch_dog_patience = 5  # 看门狗的耐心, 设置5秒即可
     headers, payload = generate_payload(inputs, llm_kwargs, history, system_prompt=sys_prompt, stream=True)
     retry = 0
+    from bridge_all import model_info
     while True:
         try:
             # make a POST request to the API endpoint, stream=False
-            from .bridge_all import model_info
             endpoint = model_info[llm_kwargs['llm_model']]['endpoint']
             response = requests.post(endpoint, headers=headers, proxies=proxies,
-                                    json=payload, stream=True, timeout=TIMEOUT_SECONDS); break
-        except requests.exceptions.ReadTimeout as e:
+                                     json=payload, stream=True, timeout=TIMEOUT_SECONDS)
+            stream_response = response.iter_lines()
+            break
+        except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError):
             retry += 1
             traceback.print_exc()
-            if retry > MAX_RETRY: raise TimeoutError
-            if MAX_RETRY!=0: print(f'请求超时，正在重试 ({retry}/{MAX_RETRY}) ……')
+            if retry > MAX_RETRY:
+                raise TimeoutError
+            if MAX_RETRY != 0:
+                print(f'请求超时，正在重试 ({retry}/{MAX_RETRY}) ……')
+        except Exception as e:
+            print(f"出现异常：{e}")
+            raise e
 
-    stream_response =  response.iter_lines()
     result = ''
     while True:
-        try: chunk = next(stream_response).decode()
+        try:
+            chunk = next(stream_response).decode()
         except StopIteration: 
             break
-        except requests.exceptions.ConnectionError:
-            chunk = next(stream_response).decode() # 失败了，重试一次？再失败就没办法了。
-        if len(chunk)==0: continue
+        # except requests.exceptions.ConnectionError:
+        #     chunk = next(stream_response).decode()  # 失败了，重试一次？再失败就没办法了。
+        if len(chunk) == 0:
+            continue
         if not chunk.startswith('data:'): 
             error_msg = get_full_error(chunk.encode('utf8'), stream_response).decode()
             if "reduce the length" in error_msg:
                 raise ConnectionAbortedError("OpenAI拒绝了请求:" + error_msg)
             else:
                 raise RuntimeError("OpenAI拒绝了请求：" + error_msg)
-        if ('data: [DONE]' in chunk): break # api2d 正常完成
+        if 'data: [DONE]' in chunk:
+            break  # api2d 正常完成
         json_data = json.loads(chunk.lstrip('data:'))['choices'][0]
         delta = json_data["delta"]
-        if len(delta) == 0: break
-        if "role" in delta: continue
+        if len(delta) == 0:
+            break
+        if "role" in delta:
+            continue
         if "content" in delta: 
             result += delta["content"]
-            if not console_slience: print(delta["content"], end='')
+            if not console_slience:
+                print(delta["content"], end='')
             if observe_window is not None: 
                 # 观测窗，把已经获取的数据显示出去
                 if len(observe_window) >= 1: observe_window[0] += delta["content"]
@@ -100,7 +117,8 @@ def predict_no_ui_long_connection(inputs, llm_kwargs, history=[], sys_prompt="",
                 if len(observe_window) >= 2:  
                     if (time.time()-observe_window[1]) > watch_dog_patience:
                         raise RuntimeError("用户取消了程序。")
-        else: raise RuntimeError("意外Json结构："+delta)
+        else:
+            raise RuntimeError("意外Json结构："+delta)
     if json_data['finish_reason'] == 'length':
         raise ConnectionAbortedError("正常结束，但显示Token不足，导致输出不完整，请削减单次输入的文本量。")
     return result
@@ -228,6 +246,7 @@ def predict(inputs, llm_kwargs, plugin_kwargs, chatbot, history=[], system_promp
                     yield from update_ui(chatbot=chatbot, history=history, msg="Json异常" + error_msg) # 刷新界面
                     return
 
+
 def generate_payload(inputs, llm_kwargs, history, system_prompt, stream):
     """
     整合所有信息，选择LLM模型，生成http请求，为发送请求做准备
@@ -247,23 +266,19 @@ def generate_payload(inputs, llm_kwargs, history, system_prompt, stream):
     messages = [{"role": "system", "content": system_prompt}]
     if conversation_cnt:
         for index in range(0, 2*conversation_cnt, 2):
-            what_i_have_asked = {}
-            what_i_have_asked["role"] = "user"
-            what_i_have_asked["content"] = history[index]
-            what_gpt_answer = {}
-            what_gpt_answer["role"] = "assistant"
-            what_gpt_answer["content"] = history[index+1]
+            what_i_have_asked = {"role": "user", "content": history[index]}
+            what_gpt_answer = {"role": "assistant", "content": history[index + 1]}
             if what_i_have_asked["content"] != "":
-                if what_gpt_answer["content"] == "": continue
-                if what_gpt_answer["content"] == timeout_bot_msg: continue
+                if what_gpt_answer["content"] == "":
+                    continue
+                if what_gpt_answer["content"] == timeout_bot_msg:
+                    continue
                 messages.append(what_i_have_asked)
                 messages.append(what_gpt_answer)
             else:
                 messages[-1]['content'] = what_gpt_answer['content']
 
-    what_i_ask_now = {}
-    what_i_ask_now["role"] = "user"
-    what_i_ask_now["content"] = inputs
+    what_i_ask_now = {"role": "user", "content": inputs}
     messages.append(what_i_ask_now)
 
     payload = {
@@ -278,8 +293,8 @@ def generate_payload(inputs, llm_kwargs, history, system_prompt, stream):
     }
     try:
         print(f" {llm_kwargs['llm_model']} : {conversation_cnt} : {inputs[:100]} ..........")
-    except:
-        print('输入中可能存在乱码。')
-    return headers,payload
+    except Exception as e:
+        print(f'输入中可能存在乱码。抛出异常: {e}')
+    return headers, payload
 
 

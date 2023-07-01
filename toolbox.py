@@ -21,6 +21,7 @@ pj = os.path.join
 ========================================================================
 """
 
+
 class ChatBotWithCookies(list):
     def __init__(self, cookie):
         self._cookies = cookie
@@ -71,11 +72,13 @@ def update_ui(chatbot, history, msg='正常', **kwargs):  # 刷新界面
     assert isinstance(chatbot, ChatBotWithCookies), "在传递chatbot的过程中不要将其丢弃。必要时，可用clear将其清空，然后用for+append循环重新赋值。"
     yield chatbot.get_cookies(), chatbot, history, msg
 
+
 def update_ui_lastest_msg(lastmsg, chatbot, history, delay=1):  # 刷新界面
     """
     刷新用户界面
     """
-    if len(chatbot) == 0: chatbot.append(["update_ui_last_msg", lastmsg])
+    if len(chatbot) == 0:
+        chatbot.append(["update_ui_last_msg", lastmsg])
     chatbot[-1] = list(chatbot[-1])
     chatbot[-1][-1] = lastmsg
     yield from update_ui(chatbot=chatbot, history=history)
@@ -83,24 +86,25 @@ def update_ui_lastest_msg(lastmsg, chatbot, history, delay=1):  # 刷新界面
 
 
 def trimmed_format_exc():
-    import os, traceback
-    str = traceback.format_exc()
+    import os
+    import traceback
+    _str = traceback.format_exc()
     current_path = os.getcwd()
     replace_path = "."
-    return str.replace(current_path, replace_path)
+    return _str.replace(current_path, replace_path)
+
 
 def CatchException(f):
     """
     装饰器函数，捕捉函数f中的异常并封装到一个生成器中返回，并显示到聊天当中。
     """
-
     @wraps(f)
     def decorated(txt, top_p, temperature, chatbot, history, systemPromptTxt, WEB_PORT=-1):
         try:
             yield from f(txt, top_p, temperature, chatbot, history, systemPromptTxt, WEB_PORT)
         except Exception as e:
             from check_proxy import check_proxy
-            from toolbox import get_conf
+            # from toolbox import get_conf  # 不需要导入本文件内容
             proxies, = get_conf('proxies')
             tb_str = '```\n' + trimmed_format_exc() + '```'
             if len(chatbot) == 0:
@@ -108,7 +112,7 @@ def CatchException(f):
                 chatbot.append(["插件调度异常", "异常原因"])
             chatbot[-1] = (chatbot[-1][0],
                            f"[Local Message] 实验性函数调用出错: \n\n{tb_str} \n\n当前代理可用性: \n\n{check_proxy(proxies)}")
-            yield from update_ui(chatbot=chatbot, history=history, msg=f'异常 {e}') # 刷新界面
+            yield from update_ui(chatbot=chatbot, history=history, msg=f'异常 {e}')  # 刷新界面
     return decorated
 
 
@@ -147,6 +151,7 @@ def HotReload(f):
     - select_api_key:           根据当前的模型类别，抽取可用的api-key
 ========================================================================
 """
+
 
 def get_reduce_token_percent(text):
     """
@@ -207,8 +212,6 @@ def regular_txt_to_markdown(text):
     return text
 
 
-
-
 def report_execption(chatbot, history, a, b):
     """
     向chatbot中添加错误信息
@@ -237,6 +240,7 @@ def text_divide_paragraph(text):
             lines[i] = lines[i].replace(" ", "&nbsp;")
         text = "</br>".join(lines)
         return pre + text + suf
+
 
 @lru_cache(maxsize=128) # 使用 lru缓存 加快转换速度
 def markdown_convertion(txt):
@@ -440,6 +444,7 @@ def find_recent_files(directory):
 
     return recent_files
 
+
 def promote_file_to_downloadzone(file, rename_file=None, chatbot=None):
     # 将文件复制一份到下载区
     import shutil
@@ -451,6 +456,7 @@ def promote_file_to_downloadzone(file, rename_file=None, chatbot=None):
         if 'file_to_promote' in chatbot._cookies: current = chatbot._cookies['file_to_promote']
         else: current = []
         chatbot._cookies.update({'file_to_promote': [new_path] + current})
+
 
 def on_file_uploaded(files, chatbot, txt, txt2, checkboxes):
     """
@@ -505,16 +511,19 @@ def on_report_generated(cookies, files, chatbot):
     chatbot.append(['报告如何远程获取？', f'报告已经添加到右侧“文件上传区”（可能处于折叠状态），请查收。{file_links}'])
     return cookies, report_files, chatbot
 
+
 def is_openai_api_key(key):
     API_MATCH_ORIGINAL = re.match(r"sk-[a-zA-Z0-9]{48}$", key)
     API_MATCH_AZURE = re.match(r"[a-zA-Z0-9]{32}$", key)
     return bool(API_MATCH_ORIGINAL) or bool(API_MATCH_AZURE)
+
 
 def is_api2d_key(key):
     if key.startswith('fk') and len(key) == 41:
         return True
     else:
         return False
+
 
 def is_any_api_key(key):
     if ',' in key:
@@ -524,6 +533,7 @@ def is_any_api_key(key):
         return False
     else:
         return is_openai_api_key(key) or is_api2d_key(key)
+
 
 def what_keys(keys):
     avail_key_list = {'OpenAI Key':0, "API2D Key":0}
@@ -538,6 +548,7 @@ def what_keys(keys):
             avail_key_list['API2D Key'] += 1
 
     return f"检测到： OpenAI Key {avail_key_list['OpenAI Key']} 个，API2D Key {avail_key_list['API2D Key']} 个"
+
 
 def select_api_key(keys, llm_model):
     import random
@@ -557,6 +568,7 @@ def select_api_key(keys, llm_model):
 
     api_key = random.choice(avail_key_list) # 随机负载均衡
     return api_key
+
 
 def read_env_variable(arg, default_value):
     """
@@ -611,6 +623,7 @@ def read_env_variable(arg, default_value):
 
     print亮绿(f"[ENV_VAR] 成功读取环境变量{arg}")
     return r
+
 
 @lru_cache(maxsize=128)
 def read_single_conf_with_lru_cache(arg):
@@ -675,6 +688,7 @@ class DummyWith():
 
     def __exit__(self, exc_type, exc_value, traceback):
         return
+
 
 def run_gradio_in_subpath(demo, auth, port, custom_path):
     """
@@ -770,6 +784,7 @@ def clip_history(inputs, history, tokenizer, max_token_limit):
 ========================================================================
 """
 
+
 def zip_folder(source_folder, dest_folder, zip_name):
     import zipfile
     import os
@@ -801,6 +816,7 @@ def zip_folder(source_folder, dest_folder, zip_name):
 
     print(f"Zip file created at {zip_file}")
 
+
 def zip_result(folder):
     import time
     t = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
@@ -810,6 +826,7 @@ def zip_result(folder):
 def gen_time_str():
     import time
     return time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
+
 
 class ProxyNetworkActivate():
     """
@@ -830,11 +847,13 @@ class ProxyNetworkActivate():
         if 'HTTPS_PROXY' in os.environ: os.environ.pop('HTTPS_PROXY')
         return
 
+
 def objdump(obj, file='objdump.tmp'):
     import pickle
     with open(file, 'wb+') as f:
         pickle.dump(obj, f)
     return
+
 
 def objload(file='objdump.tmp'):
     import pickle, os
