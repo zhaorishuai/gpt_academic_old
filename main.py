@@ -71,7 +71,7 @@ def main():
                         stopBtn = gr.Button("停止", variant="secondary"); stopBtn.style(size="sm")
                         clearBtn = gr.Button("清除", variant="secondary", visible=False); clearBtn.style(size="sm")
                     with gr.Row():
-                        status = gr.Markdown(f"Tip: 按Enter提交, 按Shift+Enter换行。当前模型: {LLM_MODEL} \n {proxy_info}")
+                        status = gr.Markdown(f"Tip: 按Enter提交, 按Shift+Enter换行。当前模型: {LLM_MODEL} \n {proxy_info}", elem_id="state-panel")
                 with gr.Accordion("基础功能区", open=True, elem_id="basic-panel") as area_basic_fn:
                     with gr.Row():
                         for k in functional:
