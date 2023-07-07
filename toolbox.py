@@ -452,7 +452,7 @@ def promote_file_to_downloadzone(file, rename_file=None, chatbot=None):
         else: current = []
         chatbot._cookies.update({'file_to_promote': [new_path] + current})
 
-def on_file_uploaded(files, chatbot, txt, txt2, checkboxes):
+def on_file_uploaded(files, chatbot, txt, txt2, checkboxes, cookies):
     """
     当文件被上传时的回调函数
     """
@@ -463,24 +463,23 @@ def on_file_uploaded(files, chatbot, txt, txt2, checkboxes):
     import time
     import glob
     from toolbox import extract_archive
-    try:
-        shutil.rmtree('./private_upload/')
-    except:
-        pass
+    user_uuid = cookies.get('user-uuid', 'unknown_user')
+    try: shutil.rmtree(f'./private_upload/{user_uuid}')
+    except: pass
     time_tag = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())
-    os.makedirs(f'private_upload/{time_tag}', exist_ok=True)
+    os.makedirs(f'private_upload/{user_uuid}/{time_tag}', exist_ok=True)
     err_msg = ''
     for file in files:
         file_origin_name = os.path.basename(file.orig_name)
-        shutil.copy(file.name, f'private_upload/{time_tag}/{file_origin_name}')
-        err_msg += extract_archive(f'private_upload/{time_tag}/{file_origin_name}',
-                                   dest_dir=f'private_upload/{time_tag}/{file_origin_name}.extract')
-    moved_files = [fp for fp in glob.glob('private_upload/**/*', recursive=True)]
+        shutil.copy(file.name, f'private_upload/{user_uuid}/{time_tag}/{file_origin_name}')
+        err_msg += extract_archive(f'private_upload/{user_uuid}/{time_tag}/{file_origin_name}',
+                                   dest_dir=f'private_upload/{user_uuid}/{time_tag}/{file_origin_name}.extract')
+    moved_files = [fp for fp in glob.glob(f'private_upload/{user_uuid}/**/*', recursive=True)]
     if "底部输入区" in checkboxes:
         txt = ""
-        txt2 = f'private_upload/{time_tag}'
+        txt2 = f'private_upload/{user_uuid}/{time_tag}'
     else:
-        txt = f'private_upload/{time_tag}'
+        txt = f'private_upload/{user_uuid}/{time_tag}'
         txt2 = ""
     moved_files_str = '\t\n\n'.join(moved_files)
     chatbot.append(['我上传了文件，请查收',

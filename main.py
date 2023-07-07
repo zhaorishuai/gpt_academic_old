@@ -155,7 +155,7 @@ def main():
             click_handle = functional[k]["Button"].click(fn=ArgsGeneralWrapper(predict), inputs=[*input_combo, gr.State(True), gr.State(k)], outputs=output_combo)
             cancel_handles.append(click_handle)
         # 文件上传区，接收文件后与chatbot的互动
-        file_upload.upload(on_file_uploaded, [file_upload, chatbot, txt, txt2, checkboxes], [chatbot, txt, txt2])
+        file_upload.upload(on_file_uploaded, [file_upload, chatbot, txt, txt2, checkboxes, cookies], [chatbot, txt, txt2])
         # 函数插件-固定按钮区
         for k in crazy_fns:
             if not crazy_fns[k].get("AsButton", True): continue
@@ -185,6 +185,12 @@ def main():
         # 终止按钮的回调函数注册
         stopBtn.click(fn=None, inputs=None, outputs=None, cancels=cancel_handles)
         stopBtn2.click(fn=None, inputs=None, outputs=None, cancels=cancel_handles)
+        def init_cookie(cookies, chatbot):
+            # 为每一位访问的用户赋予一个独一无二的uuid编码
+            import uuid
+            cookies.update({'user-uuid': 'user-'+uuid.uuid4().hex})
+            return cookies
+        demo.load(init_cookie, inputs=[cookies, chatbot], outputs=[cookies])
 
     # gradio的inbrowser触发不太稳定，回滚代码到原始的浏览器打开函数
     def auto_opentab_delay():
