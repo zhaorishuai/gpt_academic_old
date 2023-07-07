@@ -82,20 +82,74 @@ def adjust_theme():
             button_cancel_text_color_dark="white",
         )
 
+        # 别忘了layout的区别
+        js = """
+<script>
+
+function ChatBotHeight() {
+    function update_height(){
+        const chatbot = document.querySelector('#gpt-chatbot > div.wrap.svelte-18telvq');
+        const panel1 = document.querySelector('#input-panel');
+        const panel2 = document.querySelector('#basic-panel');
+        const panel3 = document.querySelector('#plugin-panel');
+        const panel4 = document.querySelector('#interact-panel');
+        const panel5 = document.querySelector('#input-panel2');
+        var panel_height_target = panel1.offsetHeight + panel2.offsetHeight + panel3.offsetHeight + panel4.offsetHeight + panel5.offsetHeight + 21;
+        var panel_height_target = parseInt(panel_height_target);
+        var chatbot_height = chatbot.style.height;
+        var chatbot_height = parseInt(chatbot_height);
+        if (panel_height_target!=chatbot_height)
+        {
+            var pixelString = panel_height_target.toString() + 'px';
+            chatbot.style.maxHeight = pixelString; chatbot.style.height = pixelString; 
+        }
+    }
+
+    function update_height_slow(){
+        const chatbot = document.querySelector('#gpt-chatbot > div.wrap.svelte-18telvq');
+        const panel1 = document.querySelector('#input-panel');
+        const panel2 = document.querySelector('#basic-panel');
+        const panel3 = document.querySelector('#plugin-panel');
+        const panel4 = document.querySelector('#interact-panel');
+        const panel5 = document.querySelector('#input-panel2');
+        var panel_height_target = panel1.offsetHeight + panel2.offsetHeight + panel3.offsetHeight + panel4.offsetHeight + panel5.offsetHeight + 21;
+        var panel_height_target = parseInt(panel_height_target);
+        var chatbot_height = chatbot.style.height;
+        var chatbot_height = parseInt(chatbot_height);
+        if (panel_height_target!=chatbot_height)
+        {
+            new_panel_height = (panel_height_target - chatbot_height)*0.5 + chatbot_height;
+            if (Math.abs(new_panel_height - panel_height_target) < 10){
+                new_panel_height = panel_height_target;
+            }
+            console.log(chatbot_height, panel_height_target, new_panel_height);
+            var pixelString = new_panel_height.toString() + 'px';
+            chatbot.style.maxHeight = pixelString; chatbot.style.height = pixelString; 
+        }
+    }
+
+    update_height();
+    setInterval(function() {
+        update_height_slow()
+    }, 50); // 每100毫秒执行一次
+}
+
+</script>
+"""
         # 添加一个萌萌的看板娘
         if ADD_WAIFU:
-            js = """
+            js += """
                 <script src="file=docs/waifu_plugin/jquery.min.js"></script>
                 <script src="file=docs/waifu_plugin/jquery-ui.min.js"></script>
                 <script src="file=docs/waifu_plugin/autoload.js"></script>
             """
-            gradio_original_template_fn = gr.routes.templates.TemplateResponse
-            def gradio_new_template_fn(*args, **kwargs):
-                res = gradio_original_template_fn(*args, **kwargs)
-                res.body = res.body.replace(b'</html>', f'{js}</html>'.encode("utf8"))
-                res.init_headers()
-                return res
-            gr.routes.templates.TemplateResponse = gradio_new_template_fn   # override gradio template
+        gradio_original_template_fn = gr.routes.templates.TemplateResponse
+        def gradio_new_template_fn(*args, **kwargs):
+            res = gradio_original_template_fn(*args, **kwargs)
+            res.body = res.body.replace(b'</html>', f'{js}</html>'.encode("utf8"))
+            res.init_headers()
+            return res
+        gr.routes.templates.TemplateResponse = gradio_new_template_fn   # override gradio template
     except:
         set_theme = None
         print('gradio版本较旧, 不能自定义字体和颜色')

@@ -36,12 +36,13 @@ class ChatBotWithCookies(list):
     def get_cookies(self):
         return self._cookies
 
+black_list = ['127.0.0.1']
 
 def ArgsGeneralWrapper(f):
     """
     装饰器函数，用于重组输入参数，改变输入参数的顺序与结构。
     """
-    def decorated(cookies, max_length, llm_model, txt, txt2, top_p, temperature, chatbot, history, system_prompt, plugin_advanced_arg, *args):
+    def decorated(request: gradio.Request, cookies, max_length, llm_model, txt, txt2, top_p, temperature, chatbot, history, system_prompt, plugin_advanced_arg, *args):
         txt_passon = txt
         if txt == "" and txt2 != "": txt_passon = txt2
         # 引入一个有cookie的chatbot
@@ -56,12 +57,17 @@ def ArgsGeneralWrapper(f):
             'top_p':top_p,
             'max_length': max_length,
             'temperature':temperature,
+            'client_ip': request.client.host,
         }
         plugin_kwargs = {
             "advanced_arg": plugin_advanced_arg,
         }
         chatbot_with_cookie = ChatBotWithCookies(cookies)
         chatbot_with_cookie.write_list(chatbot)
+        if llm_kwargs['client_ip'] in black_list: 
+            chatbot_with_cookie.append(['IP已封禁, 当前IP黑名单' + str(black_list), 'IP已封禁:' + llm_kwargs['client_ip']])
+            yield from update_ui(chatbot_with_cookie, history, msg='IP已封禁')
+            return  # 结束
         if cookies.get('lock_plugin', None) is None:
             # 正常状态
             yield from f(txt_passon, llm_kwargs, plugin_kwargs, chatbot_with_cookie, history, system_prompt, *args)
