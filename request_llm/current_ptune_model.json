@@ -1,0 +1,5 @@
+{
+    "model_name_or_path": "THUDM/chatglm2-6b",
+    "pre_seq_len": "128",
+    "ptuning_checkpoint": "/home/hmp/ChatGLM2-6B/ptuning/output/clothgen-chatglm2-6b-pt-128-2e-2/checkpoint-100"
+}
