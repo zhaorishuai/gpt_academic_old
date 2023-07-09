@@ -127,3 +127,7 @@ put your new bing cookies here
 ENABLE_AUDIO = False
 ALIYUN_TOKEN=""    # 例如 f37f30e0f9934c34a992f6f64f7eba4f
 ALIYUN_APPKEY=""   # 例如 RoPlZrM88DnAFkZK
+
+
+# ChatGLM Finetune Model Path
+ChatGLM_PTUNING_CHECKPOINT = ""
