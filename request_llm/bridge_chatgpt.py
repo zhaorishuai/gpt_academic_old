@@ -141,7 +141,7 @@ def predict(inputs, llm_kwargs, plugin_kwargs, chatbot, history=[], system_promp
     yield from update_ui(chatbot=chatbot, history=history, msg="等待响应") # 刷新界面
 
     try:
-        headers, payload = generate_payload(inputs, llm_kwargs, history, system_prompt, stream)
+        headers, payload = generate_payload(inputs, llm_kwargs, history, system_prompt, stream=False)
     except RuntimeError as e:
         chatbot[-1] = (inputs, f"您提供的api-key不满足要求，不包含任何可用于{llm_kwargs['llm_model']}的api-key。您可能选择了错误的模型或请求源。")
         yield from update_ui(chatbot=chatbot, history=history, msg="api-key不满足要求") # 刷新界面
@@ -156,7 +156,7 @@ def predict(inputs, llm_kwargs, plugin_kwargs, chatbot, history=[], system_promp
             from .bridge_all import model_info
             endpoint = model_info[llm_kwargs['llm_model']]['endpoint']
             response = requests.post(endpoint, headers=headers, proxies=proxies,
-                                    json=payload, stream=True, timeout=TIMEOUT_SECONDS);break
+                                    json=payload, stream=False, timeout=TIMEOUT_SECONDS);break
         except:
             retry += 1
             chatbot[-1] = ((chatbot[-1][0], timeout_bot_msg))
@@ -175,11 +175,17 @@ def predict(inputs, llm_kwargs, plugin_kwargs, chatbot, history=[], system_promp
             except StopIteration:
                 # 非OpenAI官方接口的出现这样的报错，OpenAI和API2D不会走这里
                 chunk_decoded = chunk.decode()
-                error_msg = chunk_decoded
-                chatbot, history = handle_error(inputs, llm_kwargs, chatbot, history, chunk_decoded, error_msg)
-                yield from update_ui(chatbot=chatbot, history=history, msg="非Openai官方接口返回了错误:" + chunk.decode()) # 刷新界面
-                return
-            
+                if '"finish_reason":"stop"' in chunk_decoded:
+                    history[-1] = json.loads(chunk_decoded)['choices'][0]['message']['content']
+                    chatbot[-1] = (history[-2], history[-1])
+                    yield from update_ui(chatbot=chatbot, history=history, msg='OK') # 刷新界面
+                    return
+                else:
+                    error_msg = chunk_decoded
+                    chatbot, history = handle_error(inputs, llm_kwargs, chatbot, history, chunk_decoded, error_msg)
+                    yield from update_ui(chatbot=chatbot, history=history, msg="非Openai官方接口返回了错误:" + chunk.decode()) # 刷新界面
+                    return
+                
             # print(chunk.decode()[6:])
             if is_head_of_the_stream and (r'"object":"error"' not in chunk.decode()):
                 # 数据流的第一帧不携带content
