@@ -1,6 +1,9 @@
+from collections.abc import Callable, Iterable, Mapping
+from typing import Any
 from toolbox import CatchException, update_ui, gen_time_str, trimmed_format_exc, promote_file_to_downloadzone, clear_file_downloadzone
 from .crazy_utils import request_gpt_model_in_new_thread_with_ui_alive
 from .crazy_utils import input_clipping, try_install_deps
+from multiprocessing import Process, Pipe
 import os
 
 templete = """
@@ -66,8 +69,6 @@ def gpt_interact_multi_step(txt, file_type, llm_kwargs, chatbot, history):
     history.extend([i_say, gpt_say])
     yield from update_ui(chatbot=chatbot, history=history) # 刷新界面 # 界面更新
     
-
-
     # # 第三步
     # i_say = "Please list to packages to install to run the code above. Then show me how to use `try_install_deps` function to install them."
     # i_say += 'For instance. `try_install_deps(["opencv-python", "scipy", "numpy"])`'
@@ -89,8 +90,6 @@ def gpt_interact_multi_step(txt, file_type, llm_kwargs, chatbot, history):
     return code_to_return, installation_advance, txt, file_type, llm_kwargs, chatbot, history
 
 def make_module(code):
-    import subprocess, sys, os, shutil
-
     module_file = 'gpt_fn_' + gen_time_str().replace('-','_')
     with open(f'gpt_log/{module_file}.py', 'w', encoding='utf8') as f:
         f.write(code)
@@ -119,7 +118,8 @@ def for_immediate_show_off_when_possible(file_type, fp, chatbot):
         ])
     return chatbot
 
-
+def subprocess_worker(instance, file_path, return_dict):
+    return_dict['result'] = instance.run(file_path)
 
 @CatchException
 def 虚空终端CodeInterpreter(txt, llm_kwargs, plugin_kwargs, chatbot, history, system_prompt, web_port):
@@ -176,7 +176,17 @@ def 虚空终端CodeInterpreter(txt, llm_kwargs, plugin_kwargs, chatbot, history
 
     # 代码生成结束, 开始执行
     try:
-        res = instance.run(file_path)
+        import multiprocessing
+        manager = multiprocessing.Manager()
+        return_dict = manager.dict()
+
+        p = multiprocessing.Process(target=subprocess_worker, args=(instance, file_path, return_dict))
+        # only has 10 seconds to run
+        p.start(); p.join(timeout=10)
+        if p.is_alive(): p.terminate(); p.join()
+        p.close()
+        res = return_dict['result']
+        # res = instance.run(file_path)
     except Exception as e:
         chatbot.append(["执行失败了", f"错误追踪\n```\n{trimmed_format_exc()}\n```\n"])
         # chatbot.append(["如果是缺乏依赖，请参考以下建议", installation_advance])
@@ -194,3 +204,10 @@ def 虚空终端CodeInterpreter(txt, llm_kwargs, plugin_kwargs, chatbot, history
         chatbot.append(["执行成功了，结果是一个字符串", "结果：" + res])
         yield from update_ui(chatbot=chatbot, history=history) # 刷新界面 # 界面更新   
 
+"""
+测试：
+    裁剪图像，保留下半部分
+    交换图像的蓝色通道和红色通道
+    将图像转为灰度图像
+    将csv文件转excel表格
+"""
