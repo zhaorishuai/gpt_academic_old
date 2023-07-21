@@ -465,6 +465,10 @@ def find_recent_files(directory):
 
     return recent_files
 
+def clear_file_downloadzone(chatbot):
+    if chatbot:
+        chatbot._cookies.update({'file_to_promote': []})
+    
 def promote_file_to_downloadzone(file, rename_file=None, chatbot=None):
     # 将文件复制一份到下载区
     import shutil
@@ -479,6 +483,7 @@ def promote_file_to_downloadzone(file, rename_file=None, chatbot=None):
         if 'file_to_promote' in chatbot._cookies: current = chatbot._cookies['file_to_promote']
         else: current = []
         chatbot._cookies.update({'file_to_promote': [new_path] + current})
+    return new_path
 
 def on_file_uploaded(cookies, files, chatbot, txt, txt2, checkboxes):
     """

@@ -1,7 +1,20 @@
-from toolbox import CatchException, update_ui, gen_time_str, trimmed_format_exc, promote_file_to_downloadzone
+from toolbox import CatchException, update_ui, gen_time_str, trimmed_format_exc, promote_file_to_downloadzone, clear_file_downloadzone
 from .crazy_utils import request_gpt_model_in_new_thread_with_ui_alive
 from .crazy_utils import input_clipping, try_install_deps
 import os
+
+templete = """
+```python
+import ...  # Put dependencies here, e.g. import numpy as np
+
+class TerminalFunction(object): # Do not change the name of the class, The name of the class must be `TerminalFunction`
+
+    def run(self, path):    # The name of the function must be `run`, it takes only a positional argument.
+        # rewrite the function you have just written here 
+        ...
+        return generated_file_path
+```
+"""
 
 def inspect_dependency(chatbot, history):
     yield from update_ui(chatbot=chatbot, history=history) # 刷新界面
@@ -40,19 +53,8 @@ def gpt_interact_multi_step(txt, file_type, llm_kwargs, chatbot, history):
 
     # 第二步
     prompt_compose = [
-        "If previous stage is successful, rewrite the function you have just written to satisfy following templete: ",
-"""
-```python
-import ...  # Put dependencies here, e.g. import numpy as np
-
-class TerminalFunction(object): # Do not change the name of the class, The name of the class must be `TerminalFunction`
-
-    def run(self, path):    # The name of the function must be `run`, it takes only a positional argument.
-        # rewrite the function you have just written here 
-        ...
-        return generated_string_or_path
-```
-"""
+        "If previous stage is successful, rewrite the function you have just written to satisfy following templete: \n",
+        templete
     ]
     i_say = "".join(prompt_compose); inputs_show_user = "If previous stage is successful, rewrite the function you have just written to satisfy executable templete. "
     gpt_say = yield from request_gpt_model_in_new_thread_with_ui_alive(
@@ -74,14 +76,15 @@ class TerminalFunction(object): # Do not change the name of the class, The name 
     #     llm_kwargs=llm_kwargs, chatbot=chatbot, history=history, 
     #     sys_prompt= r"You are a programmer."
     # )
-    # # 第三步  
-    i_say = "Show me how to use `pip` to install packages to run the code above. "
-    i_say += 'For instance. `pip install -r opencv-python scipy numpy`'
-    installation_advance = yield from request_gpt_model_in_new_thread_with_ui_alive(
-        inputs=i_say, inputs_show_user=inputs_show_user, 
-        llm_kwargs=llm_kwargs, chatbot=chatbot, history=history, 
-        sys_prompt= r"You are a programmer."
-    )
+    # # # 第三步  
+    # i_say = "Show me how to use `pip` to install packages to run the code above. "
+    # i_say += 'For instance. `pip install -r opencv-python scipy numpy`'
+    # installation_advance = yield from request_gpt_model_in_new_thread_with_ui_alive(
+    #     inputs=i_say, inputs_show_user=i_say, 
+    #     llm_kwargs=llm_kwargs, chatbot=chatbot, history=history, 
+    #     sys_prompt= r"You are a programmer."
+    # )
+    installation_advance = ""
     
     return code_to_return, installation_advance, txt, file_type, llm_kwargs, chatbot, history
 
@@ -107,7 +110,14 @@ def init_module_instance(module):
     init_f = getattr(importlib.import_module(module_), class_)
     return init_f()
 
-
+def for_immediate_show_off_when_possible(file_type, fp, chatbot):
+    if file_type in ['png', 'jpg']:
+        image_path = os.path.abspath(fp)
+        chatbot.append(['这是一张图片, 展示如下:',  
+            f'本地文件地址: <br/>`{image_path}`<br/>'+
+            f'本地文件预览: <br/><div align="center"><img src="file={image_path}"></div>'
+        ])
+    return chatbot
 
 
 
@@ -123,7 +133,7 @@ def 虚空终端CodeInterpreter(txt, llm_kwargs, plugin_kwargs, chatbot, history
     web_port        当前软件运行的端口号
     """
     # 清空历史，以免输入溢出
-    history = []    
+    history = []; clear_file_downloadzone(chatbot)
 
     # 基本信息：功能、贡献者
     chatbot.append([
@@ -161,15 +171,15 @@ def 虚空终端CodeInterpreter(txt, llm_kwargs, plugin_kwargs, chatbot, history
             instance = init_module_instance(res)
             break
         except Exception as e:
-            chatbot.append([f"第{j}次代码生成尝试，失败了", f"\n```\n{trimmed_format_exc()}\n```\n"])
+            chatbot.append([f"第{j}次代码生成尝试，失败了", f"错误追踪\n```\n{trimmed_format_exc()}\n```\n"])
             yield from update_ui(chatbot=chatbot, history=history) # 刷新界面
 
     # 代码生成结束, 开始执行
     try:
         res = instance.run(file_path)
     except Exception as e:
-        chatbot.append(["执行失败了", f"\n```\n{trimmed_format_exc()}\n```\n"])
-        chatbot.append(["如果是缺乏依赖，请参考以下建议", installation_advance])
+        chatbot.append(["执行失败了", f"错误追踪\n```\n{trimmed_format_exc()}\n```\n"])
+        # chatbot.append(["如果是缺乏依赖，请参考以下建议", installation_advance])
         yield from update_ui(chatbot=chatbot, history=history) # 刷新界面
         return
 
@@ -177,9 +187,10 @@ def 虚空终端CodeInterpreter(txt, llm_kwargs, plugin_kwargs, chatbot, history
     res = str(res)
     if os.path.exists(res):
         chatbot.append(["执行成功了，结果是一个有效文件", "结果：" + res])
-        promote_file_to_downloadzone(res, chatbot=chatbot)
+        new_file_path = promote_file_to_downloadzone(res, chatbot=chatbot)
+        chatbot = for_immediate_show_off_when_possible(file_type, new_file_path, chatbot)
         yield from update_ui(chatbot=chatbot, history=history) # 刷新界面 # 界面更新
     else:
-        chatbot.append(["执行成功了", "结果：" + res])
+        chatbot.append(["执行成功了，结果是一个字符串", "结果：" + res])
         yield from update_ui(chatbot=chatbot, history=history) # 刷新界面 # 界面更新   
 
