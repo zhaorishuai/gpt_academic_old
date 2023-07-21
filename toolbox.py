@@ -60,6 +60,9 @@ def ArgsGeneralWrapper(f):
         plugin_kwargs = {
             "advanced_arg": plugin_advanced_arg,
         }
+        if "recently_uploaded_files" in cookies:
+            plugin_kwargs.update({"recently_uploaded_files": cookies["recently_uploaded_files"]})
+
         chatbot_with_cookie = ChatBotWithCookies(cookies)
         chatbot_with_cookie.write_list(chatbot)
         if cookies.get('lock_plugin', None) is None:
@@ -477,12 +480,12 @@ def promote_file_to_downloadzone(file, rename_file=None, chatbot=None):
         else: current = []
         chatbot._cookies.update({'file_to_promote': [new_path] + current})
 
-def on_file_uploaded(files, chatbot, txt, txt2, checkboxes):
+def on_file_uploaded(cookies, files, chatbot, txt, txt2, checkboxes):
     """
     当文件被上传时的回调函数
     """
     if len(files) == 0:
-        return chatbot, txt
+        return cookies, chatbot, txt
     import shutil
     import os
     import time
@@ -512,7 +515,8 @@ def on_file_uploaded(files, chatbot, txt, txt2, checkboxes):
                     f'[Local Message] 收到以下文件: \n\n{moved_files_str}' +
                     f'\n\n调用路径参数已自动修正到: \n\n{txt}' +
                     f'\n\n现在您点击任意“红颜色”标识的函数插件时，以上文件将被作为输入参数'+err_msg])
-    return chatbot, txt, txt2
+    cookies.update({"recently_uploaded_files": moved_files})
+    return cookies, chatbot, txt, txt2
 
 
 def on_report_generated(cookies, files, chatbot):

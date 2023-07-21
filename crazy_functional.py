@@ -432,18 +432,18 @@ def get_crazy_functions():
     except:
         print('Load function plugin failed')
         
-    # try:
-    #     from crazy_functions.虚空终端 import 终端
-    #     function_plugins.update({
-    #         "超级终端": {
-    #             "Color": "stop",
-    #             "AsButton": False,
-    #             # "AdvancedArgs": True,
-    #             # "ArgsReminder": "",
-    #             "Function": HotReload(终端)
-    #         }
-    #     })
-    # except:
-    #     print('Load function plugin failed')
+    try:
+        from crazy_functions.虚空终端CodeInterpreter import 虚空终端CodeInterpreter
+        function_plugins.update({
+            "虚空终端CodeInterpreter": {
+                "Color": "stop",
+                "AsButton": True,
+                # "AdvancedArgs": True,
+                # "ArgsReminder": "",
+                "Function": HotReload(虚空终端CodeInterpreter)
+            }
+        })
+    except:
+        print('Load function plugin failed')
 
     return function_plugins

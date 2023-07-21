@@ -228,6 +228,14 @@ def test_chatglm_finetune():
     for cookies, cb, hist, msg in (启动微调)(txt, llm_kwargs, plugin_kwargs, chatbot, history, system_prompt, web_port):
         cli_printer.print(cb)
 
+def test_虚空终端CodeInterpreter():
+    from crazy_functions.虚空终端CodeInterpreter import 虚空终端CodeInterpreter
+    txt = 'Convert this dataset to excel.'
+    plugin_kwargs = {"recently_uploaded_files":"build/assets/iris.csv"}
+
+    for cookies, cb, hist, msg in (虚空终端CodeInterpreter)(txt, llm_kwargs, plugin_kwargs, chatbot, history, system_prompt, web_port):
+        cli_printer.print(cb)
+
 
 if __name__ == "__main__":
     # test_解析一个Python项目()
@@ -243,7 +251,8 @@ if __name__ == "__main__":
     # test_数学动画生成manim()
     # test_Langchain知识库()
     # test_Langchain知识库读取()
-    test_Latex()
+    # test_Latex()
     # test_chatglm_finetune()
+    test_虚空终端CodeInterpreter()
     input("程序完成，回车退出。")
     print("退出。")
