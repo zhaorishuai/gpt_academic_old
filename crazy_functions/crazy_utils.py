@@ -141,7 +141,7 @@ def request_gpt_model_multi_threads_with_very_awesome_ui_and_high_efficiency(
         chatbot, history_array, sys_prompt_array, 
         refresh_interval=0.2, max_workers=-1, scroller_max_len=30,
         handle_token_exceed=True, show_user_at_complete=False,
-        retry_times_at_unknown_error=2,
+        retry_times_at_unknown_error=2, callback_fn=None
         ):
     """
     Request GPT model using multiple threads with UI and high efficiency
@@ -166,6 +166,7 @@ def request_gpt_model_multi_threads_with_very_awesome_ui_and_high_efficiency(
         handle_token_exceed：是否自动处理token溢出的情况，如果选择自动处理，则会在溢出时暴力截断，默认开启
         show_user_at_complete (bool, optional): (在结束时，把完整输入-输出结果显示在聊天框)
         retry_times_at_unknown_error：子任务失败时的重试次数
+        callback_fn: 当信息更新时，在主进程调用的回调函数
 
     输出 Returns:
         list: List of GPT model responses （每个子任务的输出汇总，如果某个子任务出错，response中会携带traceback报错信息，方便调试和定位问题。）
@@ -283,6 +284,9 @@ def request_gpt_model_multi_threads_with_very_awesome_ui_and_high_efficiency(
         # 在前端打印些好玩的东西
         chatbot[-1] = [chatbot[-1][0], f'多线程操作已经开始，完成情况: \n\n{stat_str}' + ''.join(['.']*(cnt % 10+1))]
         yield from update_ui(chatbot=chatbot, history=[]) # 刷新界面
+        # 回调函数
+        if callback_fn is not None: callback_fn([mutable[thread_index][0] for thread_index in range(len(futures))])
+        # 结束了吗？
         if all(worker_done):
             executor.shutdown()
             break

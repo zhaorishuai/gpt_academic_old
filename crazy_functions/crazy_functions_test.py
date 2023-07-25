@@ -237,6 +237,14 @@ def test_虚空终端CodeInterpreter():
         cli_printer.print(cb)
 
 
+def test_解析项目源代码炫酷版():
+    from crazy_functions.解析项目源代码炫酷版 import 解析一个Python项目炫酷版
+    txt = './'
+
+    for cookies, cb, hist, msg in (解析一个Python项目炫酷版)(txt, llm_kwargs, plugin_kwargs, chatbot, history, system_prompt, web_port):
+        cli_printer.print(cb)
+
+
 if __name__ == "__main__":
     # test_解析一个Python项目()
     # test_Latex英文润色()
@@ -253,6 +261,7 @@ if __name__ == "__main__":
     # test_Langchain知识库读取()
     # test_Latex()
     # test_chatglm_finetune()
-    test_虚空终端CodeInterpreter()
+    # test_虚空终端CodeInterpreter()
+    test_解析项目源代码炫酷版()
     input("程序完成，回车退出。")
     print("退出。")
