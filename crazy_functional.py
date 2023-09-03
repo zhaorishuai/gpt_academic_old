@@ -56,67 +56,81 @@ def get_crazy_functions():
             "Function": HotReload(解析ipynb文件),
             "AdvancedArgs": True, # 调用时，唤起高级参数输入区（默认False）
             "ArgsReminder": "若输入0，则不解析notebook中的Markdown块", # 高级参数输入区的显示提示
+            "Tags":["代码解析"],
         },
         "批量总结Word文档": {
-            "AsButton": False,
-            "Color": "primary",
-            "Function": HotReload(总结word文档)
+            "Color": "stop",
+            "Function": HotReload(总结word文档),
+            "Tags":["文档"]
+
         },
         "解析整个C++项目头文件": {
             "Color": "primary",    # 按钮颜色
             "AsButton": False,  # 加入下拉菜单中
-            "Function": HotReload(解析一个C项目的头文件)
+            "Function": HotReload(解析一个C项目的头文件),
+            "Tags":["代码解析"],
         },
         "解析整个C++项目（.cpp/.hpp/.c/.h）": {
             "Color": "primary",    # 按钮颜色
             "AsButton": False,  # 加入下拉菜单中
-            "Function": HotReload(解析一个C项目)
+            "Function": HotReload(解析一个C项目),
+            "Tags":["代码解析"],
         },
         "解析整个Go项目": {
             "Color": "primary",    # 按钮颜色
             "AsButton": False,  # 加入下拉菜单中
-            "Function": HotReload(解析一个Golang项目)
+            "Function": HotReload(解析一个Golang项目),
+            "Tags":["代码解析"],
+            
         },
         "解析整个Rust项目": {
             "Color": "primary",    # 按钮颜色
             "AsButton": False,  # 加入下拉菜单中
-            "Function": HotReload(解析一个Rust项目)
+            "Function": HotReload(解析一个Rust项目),
+            "Tags":["代码解析"],
         },
         "解析整个Java项目": {
             "Color": "primary",  # 按钮颜色
             "AsButton": False,  # 加入下拉菜单中
-            "Function": HotReload(解析一个Java项目)
+            "Function": HotReload(解析一个Java项目),
+            "Tags":["代码解析"],
         },
         "解析整个前端项目（js,ts,css等）": {
             "Color": "primary",  # 按钮颜色
             "AsButton": False,  # 加入下拉菜单中
-            "Function": HotReload(解析一个前端项目)
+            "Function": HotReload(解析一个前端项目),
+            "Tags":["代码解析"],
         },
         "解析整个Lua项目": {
             "Color": "primary",    # 按钮颜色
             "AsButton": False,  # 加入下拉菜单中
-            "Function": HotReload(解析一个Lua项目)
+            "Function": HotReload(解析一个Lua项目),
+            "Tags":["代码解析"],
+            
         },
         "解析整个CSharp项目": {
             "Color": "primary",    # 按钮颜色
             "AsButton": False,  # 加入下拉菜单中
-            "Function": HotReload(解析一个CSharp项目)
+            "Function": HotReload(解析一个CSharp项目),
+            "Tags":["代码解析"],
         },
         "读Tex论文写摘要": {
-            "Color": "primary",    # 按钮颜色
-            "AsButton": False,  # 加入下拉菜单中
-            "Function": HotReload(读文章写摘要)
+            "Color": "stop",    # 按钮颜色
+            "Function": HotReload(读文章写摘要),
+            "Tags":["论文"]
         },
         "Markdown/Readme英译中": {
             # HotReload 的意思是热更新，修改函数插件代码后，不需要重启程序，代码直接生效
-            "Color": "primary",
-            "AsButton": False,
-            "Function": HotReload(Markdown英译中)
+            "Color": "stop",
+            "Function": HotReload(Markdown英译中),
+            "Tags":["文档"]
+
         },
         "批量生成函数注释": {
             "Color": "primary",    # 按钮颜色
             "AsButton": False,  # 加入下拉菜单中
-            "Function": HotReload(批量生成函数注释)
+            "Function": HotReload(批量生成函数注释),
+            "Tags":["代码生成"]
         },
         "[多线程Demo] 解析此项目本身（源码自译解）": {
             "Function": HotReload(解析项目本身),
@@ -161,7 +175,8 @@ def get_crazy_functions():
             "Color": "primary",
             "AsButton": False,  # 加入下拉菜单中
             # HotReload 的意思是热更新，修改函数插件代码后，不需要重启程序，代码直接生效
-            "Function": HotReload(批量总结PDF文档)
+            "Function": HotReload(批量总结PDF文档),
+            "Tags":["文档"]
         },
         # "[测试功能] 批量总结PDF文档pdfminer": {
         #     "Color": "primary",
